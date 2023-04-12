@@ -2,6 +2,7 @@
 ## Ref: https://github.com/argoproj/argo-cd
 ##
 ## Server
+
 server:
   ## ArgoCD config
   ## reference https://github.com/argoproj/argo-cd/blob/master/docs/operator-manual/argocd-cm.yaml
@@ -82,3 +83,45 @@ server:
       kind: '*'
     orphanedResources:
       warn: false
+
+
+  extraArgs:
+   - --insecure
+  insecure: true
+  # ingress:
+  #   # -- Enable an ingress resource for the Argo CD server
+  #   annotations:
+  #     alb.ingress.kubernetes.io/actions.ssl-redirect: '{"Type": "redirect", "RedirectConfig":
+  #       { "Protocol": "HTTPS", "Port": "443", "StatusCode": "HTTP_301"}}'
+  #     alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:eu-central-1:741292543009:certificate/a048c508-2f19-4aca-902e-a8de032fdeba
+  #     alb.ingress.kubernetes.io/success-codes: 200
+  #     alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS":443}]'
+  #     alb.ingress.kubernetes.io/load-balancer-attributes: routing.http2.enabled=true,idle_timeout.timeout_seconds=4000
+  #     alb.ingress.kubernetes.io/scheme: internet-facing
+  #     external-dns.alpha.kubernetes.io/hostname : gitops.thedevopsplayground.com
+  #     alb.ingress.kubernetes.io/security-groups: sg-0e2b158e393c67308 
+  #     alb.ingress.kubernetes.io/target-type: ip
+  #   enabled: true
+  #   https: false
+  #   ingressClassName: alb
+  #   labels: {}
+  #   pathType: Prefix
+  #   paths:
+  #   - /
+  #   pathType: Prefix
+  #   backend:
+  #     service:
+  #       name: argo-cd-argocd-server
+  #       port:
+  #         number: 80
+  #   hosts: ["gitops.thedevopsplayground.com"]
+  service:
+    # type: NodePort
+    type: LoadBalancer
+    annotations:
+      # external-dns.alpha.kubernetes.io/hostname: argocd-nlb.thedevopsplayground.com
+      external-dns.alpha.kubernetes.io/ttl: "60"
+      service.beta.kubernetes.io/aws-load-balancer-nlb-target-type: ip
+      service.beta.kubernetes.io/aws-load-balancer-scheme: internet-facing
+      service.beta.kubernetes.io/aws-load-balancer-type : external
+      service.beta.kubernetes.io/aws-load-balancer-attributes: load_balancing.cross_zone.enabled=true
